@@ -9,20 +9,23 @@ services:
       - 9000:9000
     depends_on: 
       - mysql_db
+    restart: always
     environment:
-      - DATABASE_DB=database
-      - DATABASE_USER=database_user
-      - DATABASE_PASSWORD=database_password
+      - DATABASE_NAME=${MYSQL_DATABASE}
+      - DATABASE_USER=${MYSQL_USER}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD}
       - DATABASE_HOST=mysql_db
       - JAVA_OPTS=-Xmx512m
 
   mysql_db:
     image: mysql:8.0
+    ports:
+      - ${MYSQL_PORT}:3306
     environment: 
-      - MYSQL_DATABASE=database
-      - MYSQL_USER=database_user
-      - MYSQL_PASSWORD=database_password
-      - MYSQL_ROOT_PASSWORD=database_root_password
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - "./mysql/init/database_initialize.sql:/docker-entrypoint-initdb.d/1.sql"
       - mysql_db_data:/var/lib/mysql
@@ -32,7 +35,7 @@ services:
     environment: 
       ADMINER_DEFAULT_SERVER: mysql_db
     ports:
-      - 8080:8080
+      - ${ADMINER_PORT}:8080
 
 volumes:
   mysql_db_data:
